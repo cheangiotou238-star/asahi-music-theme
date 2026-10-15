@@ -11,7 +11,11 @@ get_header();
 <main id="main" class="container">
 	<?php if ( have_posts() ) : ?>
 		<header class="page-header">
-			<?php the_archive_title( '<h1 class="section-title">', '</h1>' ); ?>
+			<?php if ( is_post_type_archive( 'song' ) ) : ?>
+				<h1 class="section-title"><?php echo esc_html( asahi_t( 'discography' ) ); ?></h1>
+			<?php else : ?>
+				<?php the_archive_title( '<h1 class="section-title">', '</h1>' ); ?>
+			<?php endif; ?>
 		</header>
 
 		<div class="song-grid">
@@ -27,7 +31,7 @@ get_header();
 							<span class="song-card__placeholder">&#9835;</span>
 						<?php endif; ?>
 					</div>
-					<h2 class="song-card__title"><?php the_title(); ?></h2>
+					<h2 class="song-card__title"><?php echo esc_html( asahi_get_song_title() ); ?></h2>
 					<?php if ( 'song' === get_post_type() ) : ?>
 						<p class="song-card__creator"><?php echo esc_html( asahi_get_creator() ); ?></p>
 					<?php endif; ?>
@@ -37,7 +41,7 @@ get_header();
 
 		<?php the_posts_pagination(); ?>
 	<?php else : ?>
-		<p><?php esc_html_e( '暫無內容。', 'asahi-music-theme' ); ?></p>
+		<p><?php echo esc_html( asahi_t( 'no_content' ) ); ?></p>
 	<?php endif; ?>
 </main>
 

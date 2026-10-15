@@ -24,6 +24,7 @@ get_header();
 			$featured->the_post();
 			$f_creator = asahi_get_creator();
 			$f_mp3     = get_post_meta( get_the_ID(), '_asahi_mp3_url', true );
+			$f_mp3     = $f_mp3 ? set_url_scheme( $f_mp3, 'https' ) : '';
 			$f_cover   = get_the_post_thumbnail_url( get_the_ID(), 'large' );
 			?>
 			<section class="featured-song">
@@ -36,19 +37,20 @@ get_header();
 				</div>
 
 				<div class="featured-song__info">
-					<span class="featured-song__badge"><?php esc_html_e( '最新主打', 'asahi-music-theme' ); ?></span>
-					<h1 class="featured-song__title"><?php the_title(); ?></h1>
+					<span class="featured-song__badge"><?php echo esc_html( asahi_t( 'latest_release' ) ); ?></span>
+					<h1 class="featured-song__title"><?php echo esc_html( asahi_get_song_title() ); ?></h1>
 					<p class="featured-song__creator"><?php echo esc_html( $f_creator ); ?></p>
 
 					<?php if ( $f_mp3 ) : ?>
 						<div class="song-player">
 							<audio class="plyr-audio" controls preload="metadata">
-								<source src="<?php echo esc_url( $f_mp3 ); ?>">
+								<source src="<?php echo esc_url( $f_mp3 ); ?>" type="<?php echo esc_attr( asahi_audio_mime_type( $f_mp3 ) ); ?>">
+								<?php echo esc_html( asahi_t( 'audio_unsupported' ) ); ?>
 							</audio>
 						</div>
 					<?php endif; ?>
 
-					<a class="btn" href="<?php the_permalink(); ?>"><?php esc_html_e( '查看單曲內頁', 'asahi-music-theme' ); ?></a>
+					<a class="btn" href="<?php the_permalink(); ?>"><?php echo esc_html( asahi_t( 'view_song' ) ); ?></a>
 				</div>
 			</section>
 			<?php
@@ -58,7 +60,7 @@ get_header();
 	?>
 
 	<section class="all-songs">
-		<h2 class="section-title"><?php esc_html_e( '全部單曲', 'asahi-music-theme' ); ?></h2>
+		<h2 class="section-title"><?php echo esc_html( asahi_t( 'all_songs' ) ); ?></h2>
 
 		<?php
 		$all_songs = new WP_Query(
@@ -86,7 +88,7 @@ get_header();
 								<span class="song-card__placeholder">&#9835;</span>
 							<?php endif; ?>
 						</div>
-						<h3 class="song-card__title"><?php the_title(); ?></h3>
+						<h3 class="song-card__title"><?php echo esc_html( asahi_get_song_title() ); ?></h3>
 						<p class="song-card__creator"><?php echo esc_html( asahi_get_creator() ); ?></p>
 					</a>
 				<?php endwhile; ?>
@@ -95,7 +97,7 @@ get_header();
 			wp_reset_postdata();
 		else :
 			?>
-			<p><?php esc_html_e( '尚未發佈任何單曲。', 'asahi-music-theme' ); ?></p>
+			<p><?php echo esc_html( asahi_t( 'no_songs' ) ); ?></p>
 		<?php endif; ?>
 	</section>
 </main>

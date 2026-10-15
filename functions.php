@@ -12,6 +12,184 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'ASAHI_THEME_VERSION', '1.0.0' );
 
 /* -------------------------------------------------------------------------
+ * Multilingual support (JA / ZH / EN / PT)
+ * ---------------------------------------------------------------------- */
+function asahi_get_supported_langs() {
+	return array( 'ja', 'zh', 'en', 'pt' );
+}
+
+function asahi_get_lang() {
+	$lang    = isset( $_GET['lang'] ) ? sanitize_key( wp_unslash( $_GET['lang'] ) ) : 'ja';
+	$allowed = asahi_get_supported_langs();
+	return in_array( $lang, $allowed, true ) ? $lang : 'ja';
+}
+
+function asahi_lang_labels() {
+	return array(
+		'ja' => '日本語',
+		'zh' => '繁體中文',
+		'en' => 'English',
+		'pt' => 'Português',
+	);
+}
+
+function asahi_get_dictionary() {
+	return array(
+		'ja' => array(
+			'lang_support_label' => '4言語対応：',
+			'news'               => 'ニュース',
+			'discography'        => 'ディスコグラフィー',
+			'home'               => 'ホーム',
+			'all_songs'          => '全楽曲',
+			'latest_release'     => '最新リリース',
+			'view_song'          => '楽曲を見る',
+			'no_songs'           => '楽曲はまだ公開されていません。',
+			'no_content'         => 'コンテンツはまだありません。',
+			'role_creator'       => '歌唱・クリエイター',
+			'role_lyrics'        => '作詞',
+			'role_compose'       => '作曲',
+			'role_arrange'       => '編曲',
+			'role_illustrator'   => 'イラスト',
+			'section_story'      => '楽曲背景ストーリー',
+			'section_notes'      => '制作後記・インスピレーション',
+			'section_lyrics'     => '歌詞',
+			'footer_rights'      => '全著作権所有。',
+			'audio_unsupported'  => 'お使いのブラウザは音声再生に対応していません。',
+			'skip_to_content'    => '本文へスキップ',
+		),
+		'zh' => array(
+			'lang_support_label' => '支援四種語言：',
+			'news'               => '最新消息',
+			'discography'        => '作品列表',
+			'home'               => '首頁',
+			'all_songs'          => '全部單曲',
+			'latest_release'     => '最新主打',
+			'view_song'          => '查看單曲',
+			'no_songs'           => '尚未發佈任何單曲。',
+			'no_content'         => '暫無內容。',
+			'role_creator'       => '創作者 / 歌唱',
+			'role_lyrics'        => '作詞',
+			'role_compose'       => '作曲',
+			'role_arrange'       => '編曲',
+			'role_illustrator'   => '插畫設計',
+			'section_story'      => '歌曲背景故事',
+			'section_notes'      => '創作後記與靈感',
+			'section_lyrics'     => '完整歌詞',
+			'footer_rights'      => '保留所有權利。',
+			'audio_unsupported'  => '您的瀏覽器不支援音訊播放。',
+			'skip_to_content'    => '跳至主要內容',
+		),
+		'en' => array(
+			'lang_support_label' => '4 languages:',
+			'news'               => 'NEWS',
+			'discography'        => 'DISCOGRAPHY',
+			'home'               => 'HOME',
+			'all_songs'          => 'ALL SONGS',
+			'latest_release'     => 'LATEST RELEASE',
+			'view_song'          => 'VIEW SONG',
+			'no_songs'           => 'No songs have been released yet.',
+			'no_content'         => 'No content yet.',
+			'role_creator'       => 'Creator / Vocal',
+			'role_lyrics'        => 'Lyrics',
+			'role_compose'       => 'Composition',
+			'role_arrange'       => 'Arrangement',
+			'role_illustrator'   => 'Illustration',
+			'section_story'      => 'Background Story',
+			'section_notes'      => 'Liner Notes & Inspiration',
+			'section_lyrics'     => 'Lyrics',
+			'footer_rights'      => 'All rights reserved.',
+			'audio_unsupported'  => 'Your browser does not support audio playback.',
+			'skip_to_content'    => 'Skip to content',
+		),
+		'pt' => array(
+			'lang_support_label' => '4 idiomas:',
+			'news'               => 'NOTÍCIAS',
+			'discography'        => 'DISCOGRAFIA',
+			'home'               => 'INÍCIO',
+			'all_songs'          => 'TODAS AS MÚSICAS',
+			'latest_release'     => 'LANÇAMENTO MAIS RECENTE',
+			'view_song'          => 'VER MÚSICA',
+			'no_songs'           => 'Nenhuma música foi lançada ainda.',
+			'no_content'         => 'Nenhum conteúdo ainda.',
+			'role_creator'       => 'Criador / Vocal',
+			'role_lyrics'        => 'Letra',
+			'role_compose'       => 'Composição',
+			'role_arrange'       => 'Arranjo',
+			'role_illustrator'   => 'Ilustração',
+			'section_story'      => 'História de Fundo',
+			'section_notes'      => 'Notas do Autor & Inspiração',
+			'section_lyrics'     => 'Letra',
+			'footer_rights'      => 'Todos os direitos reservados.',
+			'audio_unsupported'  => 'Seu navegador não suporta reprodução de áudio.',
+			'skip_to_content'    => 'Pular para o conteúdo',
+		),
+	);
+}
+
+function asahi_t( $key ) {
+	$dict = asahi_get_dictionary();
+	$lang = asahi_get_lang();
+	if ( isset( $dict[ $lang ][ $key ] ) ) {
+		return $dict[ $lang ][ $key ];
+	}
+	if ( isset( $dict['ja'][ $key ] ) ) {
+		return $dict['ja'][ $key ];
+	}
+	return $key;
+}
+
+function asahi_get_song_title( $post_id = 0, $lang = '' ) {
+	$post_id = $post_id ? $post_id : get_the_ID();
+	$lang    = $lang ? $lang : asahi_get_lang();
+	$title   = get_the_title( $post_id );
+	if ( 'ja' === $lang ) {
+		return $title;
+	}
+	$translated = get_post_meta( $post_id, '_asahi_' . $lang . '_title', true );
+	return ( '' !== $translated ) ? $translated : $title;
+}
+
+function asahi_audio_mime_type( $url ) {
+	$path = wp_parse_url( $url, PHP_URL_PATH );
+	$ext  = strtolower( pathinfo( $path, PATHINFO_EXTENSION ) );
+	if ( in_array( $ext, array( 'mp4', 'm4a', 'aac' ), true ) ) {
+		return 'audio/mp4';
+	}
+	return 'audio/mpeg';
+}
+
+function asahi_filter_html_lang( $output ) {
+	$map  = array( 'ja' => 'ja', 'zh' => 'zh-Hant', 'en' => 'en', 'pt' => 'pt' );
+	$lang = asahi_get_lang();
+	$code = isset( $map[ $lang ] ) ? $map[ $lang ] : 'ja';
+	return 'lang="' . esc_attr( $code ) . '"';
+}
+add_filter( 'language_attributes', 'asahi_filter_html_lang' );
+
+function asahi_output_hreflang() {
+	$hreflang_map = array(
+		'ja' => 'ja',
+		'zh' => 'zh-Hant',
+		'en' => 'en',
+		'pt' => 'pt',
+	);
+
+	$scheme = is_ssl() ? 'https' : 'http';
+	$host   = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
+	$uri    = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+	$base   = remove_query_arg( 'lang', $scheme . '://' . $host . $uri );
+
+	foreach ( $hreflang_map as $code => $hreflang ) {
+		$url = add_query_arg( 'lang', $code, $base );
+		echo '<link rel="alternate" hreflang="' . esc_attr( $hreflang ) . '" href="' . esc_url( $url ) . '">' . "\n";
+	}
+
+	$default_url = add_query_arg( 'lang', 'ja', $base );
+	echo '<link rel="alternate" hreflang="x-default" href="' . esc_url( $default_url ) . '">' . "\n";
+}
+add_action( 'wp_head', 'asahi_output_hreflang' );
+
+/* -------------------------------------------------------------------------
  * Theme setup
  * ---------------------------------------------------------------------- */
 function asahi_theme_setup() {
@@ -31,6 +209,7 @@ add_action( 'after_setup_theme', 'asahi_theme_setup' );
  * Enqueue front-end assets (Plyr + Color Thief via CDN)
  * ---------------------------------------------------------------------- */
 function asahi_enqueue_assets() {
+	wp_enqueue_style( 'asahi-fonts', 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;600;700&display=swap', array(), null );
 	wp_enqueue_style( 'asahi-style', get_stylesheet_uri(), array(), ASAHI_THEME_VERSION );
 	wp_enqueue_style( 'plyr', 'https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css', array(), '3.7.8' );
 	wp_enqueue_script( 'color-thief', 'https://cdn.jsdelivr.net/npm/colorthief@2.4.0/dist/color-thief.umd.js', array(), '2.4.0', true );
@@ -105,6 +284,7 @@ function asahi_get_creator( $post_id = 0 ) {
 function asahi_add_meta_boxes() {
 	add_meta_box( 'asahi_song_info', __( '單曲資訊', 'asahi-music-theme' ), 'asahi_song_info_meta_box_cb', 'song', 'normal', 'high' );
 	add_meta_box( 'asahi_song_content', __( '創作內容', 'asahi-music-theme' ), 'asahi_song_content_meta_box_cb', 'song', 'normal', 'high' );
+	add_meta_box( 'asahi_song_multilang', __( '多語系內容（中文 / English / Português）', 'asahi-music-theme' ), 'asahi_song_multilang_meta_box_cb', 'song', 'normal', 'high' );
 }
 add_action( 'add_meta_boxes', 'asahi_add_meta_boxes' );
 
@@ -168,6 +348,53 @@ function asahi_song_content_meta_box_cb( $post ) {
 	<?php
 }
 
+function asahi_render_lang_panel( $post, $code, $label ) {
+	$title = get_post_meta( $post->ID, '_asahi_' . $code . '_title', true );
+	$story = get_post_meta( $post->ID, '_asahi_' . $code . '_story', true );
+	$notes = get_post_meta( $post->ID, '_asahi_' . $code . '_notes', true );
+	?>
+	<p>
+		<label for="asahi_<?php echo esc_attr( $code ); ?>_title"><strong><?php esc_html_e( '歌名標題', 'asahi-music-theme' ); ?>（<?php echo esc_html( $label ); ?>）</strong></label>
+		<input type="text" id="asahi_<?php echo esc_attr( $code ); ?>_title" name="asahi_<?php echo esc_attr( $code ); ?>_title" value="<?php echo esc_attr( $title ); ?>" class="widefat" placeholder="<?php esc_attr_e( '留空則自動使用日文主標題', 'asahi-music-theme' ); ?>">
+	</p>
+	<p>
+		<label for="asahi_<?php echo esc_attr( $code ); ?>_story"><strong><?php esc_html_e( '背景故事', 'asahi-music-theme' ); ?></strong></label>
+		<textarea id="asahi_<?php echo esc_attr( $code ); ?>_story" name="asahi_<?php echo esc_attr( $code ); ?>_story" rows="6" class="widefat" placeholder="<?php esc_attr_e( '留空則自動回退顯示日文主編輯器內容', 'asahi-music-theme' ); ?>"><?php echo esc_textarea( $story ); ?></textarea>
+	</p>
+	<p>
+		<label for="asahi_<?php echo esc_attr( $code ); ?>_notes"><strong><?php esc_html_e( '創作後記', 'asahi-music-theme' ); ?></strong></label>
+		<textarea id="asahi_<?php echo esc_attr( $code ); ?>_notes" name="asahi_<?php echo esc_attr( $code ); ?>_notes" rows="5" class="widefat" placeholder="<?php esc_attr_e( '留空則自動回退顯示日文後記', 'asahi-music-theme' ); ?>"><?php echo esc_textarea( $notes ); ?></textarea>
+	</p>
+	<?php
+}
+
+function asahi_song_multilang_meta_box_cb( $post ) {
+	?>
+	<div class="asahi-lang-tabs">
+		<ul class="asahi-lang-tabs__nav">
+			<li><a href="#" class="is-active" data-tab="zh">繁體中文</a></li>
+			<li><a href="#" data-tab="en">English</a></li>
+			<li><a href="#" data-tab="pt">Português</a></li>
+		</ul>
+		<div class="asahi-lang-tabs__panel" data-panel="zh">
+			<?php asahi_render_lang_panel( $post, 'zh', '繁體中文' ); ?>
+		</div>
+		<div class="asahi-lang-tabs__panel" data-panel="en" hidden>
+			<?php asahi_render_lang_panel( $post, 'en', 'English' ); ?>
+		</div>
+		<div class="asahi-lang-tabs__panel" data-panel="pt" hidden>
+			<?php asahi_render_lang_panel( $post, 'pt', 'Português' ); ?>
+		</div>
+	</div>
+	<p class="description" style="margin-top:8px;"><?php esc_html_e( '日本語為預設主語言；以下語言未填寫時，前台會自動回退顯示日文內容。', 'asahi-music-theme' ); ?></p>
+	<style>
+		.asahi-lang-tabs__nav { display: flex; gap: 6px; margin: 0 0 12px; padding: 0; list-style: none; border-bottom: 1px solid #dcdcde; }
+		.asahi-lang-tabs__nav a { display: inline-block; padding: 8px 14px; text-decoration: none; color: #2271b1; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+		.asahi-lang-tabs__nav a.is-active { border-bottom-color: #2271b1; font-weight: 600; color: #1d2327; }
+	</style>
+	<?php
+}
+
 /* -------------------------------------------------------------------------
  * Save meta boxes (nonce + capability checks)
  * ---------------------------------------------------------------------- */
@@ -200,6 +427,19 @@ function asahi_save_song_meta( $post_id ) {
 	foreach ( $textarea_fields as $field ) {
 		if ( isset( $_POST[ $field ] ) ) {
 			update_post_meta( $post_id, '_' . $field, sanitize_textarea_field( wp_unslash( $_POST[ $field ] ) ) );
+		}
+	}
+
+	// Multilingual fields (zh / en / pt): per-language title, story and notes.
+	foreach ( array( 'zh', 'en', 'pt' ) as $code ) {
+		foreach ( array( 'title', 'story', 'notes' ) as $field ) {
+			$meta_key = 'asahi_' . $code . '_' . $field;
+			if ( isset( $_POST[ $meta_key ] ) ) {
+				$value = ( 'title' === $field )
+					? sanitize_text_field( wp_unslash( $_POST[ $meta_key ] ) )
+					: sanitize_textarea_field( wp_unslash( $_POST[ $meta_key ] ) );
+				update_post_meta( $post_id, '_' . $meta_key, $value );
+			}
 		}
 	}
 }

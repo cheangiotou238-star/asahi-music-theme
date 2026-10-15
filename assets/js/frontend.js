@@ -7,6 +7,26 @@
 (function () {
 	'use strict';
 
+	function initLangSwitcher() {
+		var trigger = document.getElementById('lang-select-trigger');
+		var menu = document.getElementById('lang-select-menu');
+		if (!trigger || !menu) {
+			return;
+		}
+		trigger.addEventListener('click', function (e) {
+			e.preventDefault();
+			var expanded = trigger.getAttribute('aria-expanded') === 'true';
+			trigger.setAttribute('aria-expanded', String(!expanded));
+			menu.hidden = expanded;
+		});
+		document.addEventListener('click', function (e) {
+			if (!trigger.contains(e.target) && !menu.contains(e.target)) {
+				trigger.setAttribute('aria-expanded', 'false');
+				menu.hidden = true;
+			}
+		});
+	}
+
 	function initPlyr() {
 		if (typeof Plyr === 'undefined') {
 			return;
@@ -57,6 +77,8 @@
 			img.addEventListener('load', extract);
 		}
 	}
+
+	initLangSwitcher();
 
 	document.addEventListener('DOMContentLoaded', function () {
 		initPlyr();

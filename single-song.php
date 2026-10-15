@@ -23,6 +23,16 @@ while ( have_posts() ) :
 	$notes         = get_post_meta( $song_id, '_asahi_notes', true );
 	$lyrics        = get_post_meta( $song_id, '_asahi_lyrics', true );
 	$cover_url     = get_the_post_thumbnail_url( $song_id, 'large' );
+
+	// Current language + per-language translated content with Japanese fallback.
+	$lang          = asahi_get_lang();
+	$title_ja      = get_the_title( $song_id );
+	$trans_title   = ( 'ja' === $lang ) ? '' : get_post_meta( $song_id, '_asahi_' . $lang . '_title', true );
+	$display_title = ( '' !== $trans_title ) ? $trans_title : $title_ja;
+	$trans_story   = ( 'ja' === $lang ) ? '' : get_post_meta( $song_id, '_asahi_' . $lang . '_story', true );
+	$trans_notes   = ( 'ja' === $lang ) ? '' : get_post_meta( $song_id, '_asahi_' . $lang . '_notes', true );
+	$display_notes = ( '' !== $trans_notes ) ? $trans_notes : $notes;
+	$mp3_url       = $mp3_url ? set_url_scheme( $mp3_url, 'https' ) : '';
 	?>
 
 <main id="main" class="song-layout">
@@ -36,28 +46,29 @@ while ( have_posts() ) :
 				<?php endif; ?>
 			</figure>
 
-			<h1 class="song-title"><?php the_title(); ?></h1>
-			<p class="song-creator"><?php echo esc_html( $creator ); ?></p>
+			<h1 class="song-title"><?php echo esc_html( $display_title ); ?></h1>
 
 			<dl class="song-credits">
+				<div class="song-credits__item"><dt><?php echo esc_html( asahi_t( 'role_creator' ) ); ?></dt><dd><?php echo esc_html( $creator ); ?></dd></div>
 				<?php if ( $staff_lyrics ) : ?>
-					<div class="song-credits__item"><dt><?php esc_html_e( '作詞', 'asahi-music-theme' ); ?></dt><dd><?php echo esc_html( $staff_lyrics ); ?></dd></div>
+					<div class="song-credits__item"><dt><?php echo esc_html( asahi_t( 'role_lyrics' ) ); ?></dt><dd><?php echo esc_html( $staff_lyrics ); ?></dd></div>
 				<?php endif; ?>
 				<?php if ( $staff_compose ) : ?>
-					<div class="song-credits__item"><dt><?php esc_html_e( '作曲', 'asahi-music-theme' ); ?></dt><dd><?php echo esc_html( $staff_compose ); ?></dd></div>
+					<div class="song-credits__item"><dt><?php echo esc_html( asahi_t( 'role_compose' ) ); ?></dt><dd><?php echo esc_html( $staff_compose ); ?></dd></div>
 				<?php endif; ?>
 				<?php if ( $staff_arrange ) : ?>
-					<div class="song-credits__item"><dt><?php esc_html_e( '編曲', 'asahi-music-theme' ); ?></dt><dd><?php echo esc_html( $staff_arrange ); ?></dd></div>
+					<div class="song-credits__item"><dt><?php echo esc_html( asahi_t( 'role_arrange' ) ); ?></dt><dd><?php echo esc_html( $staff_arrange ); ?></dd></div>
 				<?php endif; ?>
 				<?php if ( $illustrator ) : ?>
-					<div class="song-credits__item"><dt><?php esc_html_e( '插畫', 'asahi-music-theme' ); ?></dt><dd><?php echo esc_html( $illustrator ); ?></dd></div>
+					<div class="song-credits__item"><dt><?php echo esc_html( asahi_t( 'role_illustrator' ) ); ?></dt><dd><?php echo esc_html( $illustrator ); ?></dd></div>
 				<?php endif; ?>
 			</dl>
 
 			<?php if ( $mp3_url ) : ?>
 				<div class="song-player">
 					<audio class="plyr-audio" controls preload="metadata">
-						<source src="<?php echo esc_url( $mp3_url ); ?>">
+						<source src="<?php echo esc_url( $mp3_url ); ?>" type="<?php echo esc_attr( asahi_audio_mime_type( $mp3_url ) ); ?>">
+						<?php echo esc_html( asahi_t( 'audio_unsupported' ) ); ?>
 					</audio>
 				</div>
 			<?php endif; ?>
@@ -80,22 +91,26 @@ while ( have_posts() ) :
 
 	<section class="song-content">
 		<article class="song-section song-story">
-			<h2 class="song-section__title"><?php esc_html_e( '歌曲背景故事', 'asahi-music-theme' ); ?></h2>
+			<h2 class="song-section__title"><?php echo esc_html( asahi_t( 'section_story' ) ); ?></h2>
 			<div class="song-section__body entry-content">
-				<?php the_content(); ?>
+				<?php if ( '' === $trans_story ) : ?>
+					<?php the_content(); ?>
+				<?php else : ?>
+					<?php echo nl2br( esc_html( $trans_story ) ); ?>
+				<?php endif; ?>
 			</div>
 		</article>
 
-		<?php if ( $notes ) : ?>
+		<?php if ( $display_notes ) : ?>
 			<section class="song-section song-notes">
-				<h2 class="song-section__title"><?php esc_html_e( '後記與創作靈感', 'asahi-music-theme' ); ?></h2>
-				<div class="song-section__body"><?php echo nl2br( esc_html( $notes ) ); ?></div>
+				<h2 class="song-section__title"><?php echo esc_html( asahi_t( 'section_notes' ) ); ?></h2>
+				<div class="song-section__body"><?php echo nl2br( esc_html( $display_notes ) ); ?></div>
 			</section>
 		<?php endif; ?>
 
 		<?php if ( $lyrics ) : ?>
 			<section class="song-section song-lyrics">
-				<h2 class="song-section__title"><?php esc_html_e( '完整歌詞', 'asahi-music-theme' ); ?></h2>
+				<h2 class="song-section__title"><?php echo esc_html( asahi_t( 'section_lyrics' ) ); ?></h2>
 				<div class="song-section__body song-lyrics__body"><?php echo nl2br( esc_html( $lyrics ) ); ?></div>
 			</section>
 		<?php endif; ?>

@@ -34,5 +34,15 @@
 
 			frame.open();
 		});
+
+		// Multilingual content tabs (zh / en / pt).
+		$('.asahi-lang-tabs__nav a').on('click', function (e) {
+			e.preventDefault();
+			var tab = $(this).data('tab');
+			$('.asahi-lang-tabs__nav a').removeClass('is-active');
+			$(this).addClass('is-active');
+			$('.asahi-lang-tabs__panel').hide();
+			$('.asahi-lang-tabs__panel[data-panel="' + tab + '"]').show();
+		});
 	});
 })(jQuery);
