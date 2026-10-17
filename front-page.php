@@ -27,6 +27,14 @@ get_header();
 			$f_mp3     = $f_mp3 ? set_url_scheme( $f_mp3, 'https' ) : '';
 			$f_cover   = get_the_post_thumbnail_url( get_the_ID(), 'large' );
 			?>
+			<header class="section-heading">
+				<h2 class="section-heading__en">LATEST RELEASE</h2>
+				<div class="section-heading__sub">
+					<span class="section-heading__ja">最新リリース</span>
+					<span class="section-heading__rule" aria-hidden="true"></span>
+				</div>
+			</header>
+
 			<section class="featured-song">
 				<div class="featured-song__media">
 					<?php if ( $f_cover ) : ?>
@@ -37,7 +45,6 @@ get_header();
 				</div>
 
 				<div class="featured-song__info">
-					<span class="featured-song__badge"><?php echo esc_html( asahi_t( 'latest_release' ) ); ?></span>
 					<h1 class="featured-song__title"><?php echo esc_html( asahi_get_song_title() ); ?></h1>
 					<p class="featured-song__creator"><?php echo esc_html( $f_creator ); ?></p>
 
@@ -60,7 +67,13 @@ get_header();
 	?>
 
 	<section class="all-songs">
-		<h2 class="section-title"><?php echo esc_html( asahi_t( 'all_songs' ) ); ?></h2>
+		<header class="section-heading">
+			<h2 class="section-heading__en">DISCOGRAPHY</h2>
+			<div class="section-heading__sub">
+				<span class="section-heading__ja">全楽曲一覧</span>
+				<span class="section-heading__rule" aria-hidden="true"></span>
+			</div>
+		</header>
 
 		<?php
 		$all_songs = new WP_Query(

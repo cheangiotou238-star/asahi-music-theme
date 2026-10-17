@@ -12,7 +12,13 @@ get_header();
 	<?php if ( have_posts() ) : ?>
 		<header class="page-header">
 			<?php if ( is_post_type_archive( 'song' ) ) : ?>
-				<h1 class="section-title"><?php echo esc_html( asahi_t( 'discography' ) ); ?></h1>
+				<div class="section-heading">
+					<h1 class="section-heading__en">DISCOGRAPHY</h1>
+					<div class="section-heading__sub">
+						<span class="section-heading__ja">全楽曲一覧</span>
+						<span class="section-heading__rule" aria-hidden="true"></span>
+					</div>
+				</div>
 			<?php else : ?>
 				<?php the_archive_title( '<h1 class="section-title">', '</h1>' ); ?>
 			<?php endif; ?>

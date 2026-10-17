@@ -1,8 +1,8 @@
 /**
  * Asahi Music Theme — front-end behaviours.
  * - Initialise Plyr on all `.plyr-audio` elements.
- * - Extract the cover's dominant colour via Color Thief and apply a soft
- *   dark gradient to the page background.
+ * - Extract the cover's dominant colour via Color Thief and apply a soft,
+ *   airy light gradient (Nogizaka46-style) to the page background.
  */
 (function () {
 	'use strict';
@@ -46,13 +46,15 @@
 		var g = palette[1];
 		var b = palette[2];
 
-		// Darken the dominant colour to keep text readable.
-		var top = [Math.max(0, Math.round(r * 0.12)), Math.max(0, Math.round(g * 0.12)), Math.max(0, Math.round(b * 0.12))];
-		var bottom = [Math.max(0, Math.round(r * 0.28)), Math.max(0, Math.round(g * 0.28)), Math.max(0, Math.round(b * 0.28))];
+		// Nogizaka46-style airy light gradient: a soft wash of the cover's
+		// dominant colour plus a whisper of brand purple, over a bright #fcfafd base.
+		var gradient =
+			'radial-gradient(60% 52% at 12% 0%, rgba(' + r + ', ' + g + ', ' + b + ', 0.14) 0%, rgba(252, 250, 253, 0) 70%), ' +
+			'radial-gradient(72% 60% at 0% 0%, rgba(126, 16, 131, 0.06) 0%, rgba(252, 250, 253, 0) 70%), ' +
+			'linear-gradient(180deg, #fcfafd 0%, #fcfafd 100%)';
 
-		var gradient = 'linear-gradient(160deg, rgb(' + top.join(', ') + ') 0%, rgb(' + bottom.join(', ') + ') 100%)';
 		document.body.style.background = gradient;
-		document.body.style.backgroundColor = 'rgb(' + bottom.join(', ') + ')';
+		document.body.style.backgroundColor = '#fcfafd';
 	}
 
 	function initColorThief() {

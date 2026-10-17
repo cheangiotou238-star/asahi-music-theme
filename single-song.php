@@ -91,7 +91,13 @@ while ( have_posts() ) :
 
 	<section class="song-content">
 		<article class="song-section song-story">
-			<h2 class="song-section__title"><?php echo esc_html( asahi_t( 'section_story' ) ); ?></h2>
+			<h2 class="song-section__title">
+				<span class="song-section__accent" aria-hidden="true"></span>
+				<span class="song-section__heading">
+					<span class="song-section__label"><?php echo esc_html( asahi_t( 'section_story' ) ); ?></span>
+					<span class="song-section__sub">STORY</span>
+				</span>
+			</h2>
 			<div class="song-section__body entry-content">
 				<?php if ( '' === $trans_story ) : ?>
 					<?php the_content(); ?>
@@ -103,14 +109,26 @@ while ( have_posts() ) :
 
 		<?php if ( $display_notes ) : ?>
 			<section class="song-section song-notes">
-				<h2 class="song-section__title"><?php echo esc_html( asahi_t( 'section_notes' ) ); ?></h2>
+				<h2 class="song-section__title">
+					<span class="song-section__accent" aria-hidden="true"></span>
+					<span class="song-section__heading">
+						<span class="song-section__label"><?php echo esc_html( asahi_t( 'section_notes' ) ); ?></span>
+						<span class="song-section__sub">LINER NOTES</span>
+					</span>
+				</h2>
 				<div class="song-section__body"><?php echo nl2br( esc_html( $display_notes ) ); ?></div>
 			</section>
 		<?php endif; ?>
 
 		<?php if ( $lyrics ) : ?>
 			<section class="song-section song-lyrics">
-				<h2 class="song-section__title"><?php echo esc_html( asahi_t( 'section_lyrics' ) ); ?></h2>
+				<h2 class="song-section__title">
+					<span class="song-section__accent" aria-hidden="true"></span>
+					<span class="song-section__heading">
+						<span class="song-section__label"><?php echo esc_html( asahi_t( 'section_lyrics' ) ); ?></span>
+						<span class="song-section__sub">LYRICS</span>
+					</span>
+				</h2>
 				<div class="song-section__body song-lyrics__body"><?php echo nl2br( esc_html( $lyrics ) ); ?></div>
 			</section>
 		<?php endif; ?>
